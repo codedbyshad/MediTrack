@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Sales | MediTrack</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0d47a1, #1976d2);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+      color: white;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      padding: 30px 40px;
+      border-radius: 20px;
+      width: 95%;
+      max-width: 1100px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      color: white;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #e1f5fe;
+    }
+
+    p.user-info {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #b3e5fc;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .form-group {
+      flex: 1 1 220px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #b3e5fc;
+    }
+
+    select, input[type="text"], input[type="number"] {
+      padding: 10px 15px;
+      border-radius: 12px;
+      border: none;
+      font-size: 15px;
+      outline: none;
+      color: #0d47a1;
+      background: white;
+      transition: box-shadow 0.3s ease;
+      width: 100%;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    select:focus,
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      box-shadow: 0 0 10px #1976d2;
+    }
+
+    input::placeholder {
+      color: #90a4ae;
+    }
+
+    input:disabled {
+      background: #e0e0e0;
+      color: #757575;
+      cursor: not-allowed;
+    }
+
+    button {
+      padding: 12px 30px;
+      border-radius: 12px;
+      border: none;
+      background: #1565c0;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 700;
+      width: max-content;
+      align-self: flex-start;
+      transition: background 0.3s ease;
+      box-shadow: 0 4px 15px rgba(21, 101, 192, 0.6);
+    }
+
+    button:hover {
+      background: #0d47a1;
+      box-shadow: 0 6px 20px rgba(13, 71, 161, 0.9);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    thead {
+      background: rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .total-row {
+      font-weight: 700;
+      font-size: 18px;
+      text-align: right;
+      margin-top: 15px;
+      color: #e1f5fe;
+    }
+
+    .back-link {
+      margin-top: 20px;
+      text-align: center;
+      color: #e1f5fe;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 14px;
+      user-select: none;
+    }
+
+    .back-link:hover {
+      color: #bbdefb;
+    }
+
+    @media (max-width: 900px) {
+      .form-row {
+        flex-direction: column;
+      }
+      .form-group {
+        flex: 1 1 100%;
+      }
+      button {
+        width: 100%;
+        align-self: stretch;
+      }
+      table th, table td {
+        font-size: 13px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Add Sales</h2>
+
+    {% if request.session.username %}
+      <p class="user-info">Welcome, {{ request.session.username }}!</p>
+    {% endif %}
+
+    <form id="salesForm" method="post" action="{% url 'save_sale' %}" onsubmit="return confirmSubmit();">
+      {% csrf_token %}
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="existingCustomer">Select Existing Customer:</label>
+          <select id="existingCustomer" name="existing_customer">
+            <option value="">-- Select Customer --</option>
+            {% for customer in customers %}
+            <option value="{{ customer.id }}">{{ customer.name }} ({{ customer.phone }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Or Add New Customer:</label>
+          <input type="text" id="newCustomer" name="new_customer" placeholder="Customer Name" />
+        </div>
+
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <input type="text" id="newCustomerPhone" name="new_customer_phone" placeholder="Customer Phone" />
+        </div>
+      </div>
+
+      <div class="form-row" style="align-items: center;">
+        <div class="form-group">
+          <label for="medicineSelect">Select Medicine:</label>
+          <select id="medicineSelect" required>
+            <option value="" data-price="0">-- Select Medicine --</option>
+            {% for medicine in medicines %}
+            <option value="{{ medicine.id }}" data-price="{{ medicine.price }}">{{ medicine.name }} (Stock: {{ medicine.stock }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="price">Price:</label>
+          <input type="text" id="price" readonly />
+        </div>
+
+        <div class="form-group">
+          <label for="quantity">Quantity:</label>
+          <input type="number" id="quantity" min="1" value="1" />
+        </div>
+
+        <div class="form-group" style="flex: 0 0 auto;">
+          <button type="button" onclick="addToSaleList()" style="margin-top: 28px;">Add to Sale List</button>
+        </div>
+      </div>
+
+      <table id="saleListTable">
+        <thead>
+          <tr>
+            <th>Medicine</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="total-row">
+        Total: <span id="totalAmount">0.00</span>
+      </div>
+
+      <input type="hidden" name="sale_data" id="saleDataInput" />
+
+      <button type="submit">Submit Sale</button>
+    </form>
+
+    <a href="/medicines" class="back-link">← Back to Medicine List</a>
+  </div>
+
+  <script>
+    document.getElementById('medicineSelect').addEventListener('change', function () {
+      const price = this.options[this.selectedIndex].getAttribute('data-price');
+      document.getElementById('price').value = price;
+    });
+
+    let saleItems = [];
+
+    function addToSaleList() {
+      const medSelect = document.getElementById('medicineSelect');
+      const medId = medSelect.value;
+      const medName = medSelect.options[medSelect.selectedIndex].text;
+      const price = parseFloat(document.getElementById('price').value);
+      const quantity = parseInt(document.getElementById('quantity').value);
+
+      if (!medId) {
+        alert('Please select a medicine.');
+        return;
+      }
+      if (quantity < 1) {
+        alert('Quantity must be at least 1.');
+        return;
+      }
+
+      // Check stock
+      const stockText = medSelect.options[medSelect.selectedIndex].text;
+      const stockMatch = stockText.match(/\(Stock: (\d+)\)/);
+      const stock = stockMatch ? parseInt(stockMatch[1]) : 0;
+      if (quantity > stock) {
+        alert('Quantity exceeds available stock!');
+        return;
+      }
+
+      // If already in list, update quantity
+      const existing = saleItems.find(item => item.medicine_id === medId);
+      if (existing) {
+        existing.quantity += quantity;
+        existing.subtotal = existing.quantity * existing.price;
+      } else {
+        saleItems.push({
+          medicine_id: medId,
+          medicine_name: medName,
+          price: price,
+          quantity: quantity,
+          subtotal: price * quantity
+        });
+      }
+
+      renderSaleList();
+    }
+
+    function renderSaleList() {
+      const tbody = document.querySelector('#saleListTable tbody');
+      tbody.innerHTML = '';
+
+      let total = 0;
+      saleItems.forEach((item, index) => {
+        total += item.subtotal;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.medicine_name}</td>
+          <td>${item.price.toFixed(2)}</td>
+          <td>${item.quantity}</td>
+          <td>${item.subtotal.toFixed(2)}</td>
+          <td><button type="button" onclick="removeItem(${index})">Remove</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('totalAmount').textContent = total.toFixed(2);
+      document.getElementById('saleDataInput').value = JSON.stringify(saleItems);
+    }
+
+    function removeItem(index) {
+      saleItems.splice(index, 1);
+      renderSaleList();
+    }
+
+    document.getElementById('salesForm').addEventListener('submit', function (event) {
+      if (saleItems.length === 0) {
+        alert('Add at least one medicine to the sale.');
+        event.preventDefault();
+      }
+
+      const existingCustomer = document.getElementById('existingCustomer').value;
+      const newCustomer = document.getElementById('newCustomer').value.trim();
+      const newCustomerPhone = document.getElementById('newCustomerPhone').value.trim();
+
+      if (!existingCustomer && (!newCustomer || !newCustomerPhone)) {
+        alert('Select an existing customer or enter new customer name and phone.');
+        event.preventDefault();
+      }
+    });
+
+    function confirmSubmit() {
+      return confirm('Are you sure you want to submit this sale?');
+    }
+  </script>
+</body>
+</html>

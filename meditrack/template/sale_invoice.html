@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sale Invoice</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e0f7fa, #ffffff);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .invoice-box {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #ffffff;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #007BFF;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        button, a {
+            margin: 5px;
+            padding: 8px 16px;
+            text-decoration: none;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover, a:hover {
+            background-color: #0056b3;
+        }
+
+        /* Themed table header visible only on screen */
+        @media screen {
+            table th {
+                background-color: #007BFF;
+                color: white;
+            }
+        }
+
+        /* Keep original print design */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .no-print {
+                display: none;
+            }
+
+            .invoice-box {
+                box-shadow: none;
+                border: none;
+                margin: 0;
+            }
+
+            button, a {
+                display: none;
+            }
+
+            table th {
+                background-color: transparent !important;
+                color: black !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <h2>MediTrack Invoice</h2>
+        <p><strong>Invoice No:</strong> #{{ invoice_number }}</p>
+        <p><strong>Customer:</strong> {{ customer.name }}</p>
+        <p><strong>Phone:</strong> {{ customer.phone }}</p>
+        <p><strong>Date:</strong> {{ sale.created_at|date:"d M Y, h:i A" }}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in medicines %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>₹{{ item.price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ item.total }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><strong>Grand Total</strong></td>
+                    <td><strong>₹{{ grand_total }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="buttons no-print">
+            <button onclick="window.print()">🖨️ Print Invoice</button>
+            <a href="{% url 'add_sales' %}">➕ New Sale</a>
+            <a href="{% url 'medicine_list' %}">🏠 Home</a>
+        </div>
+    </div>
+</body>
+</html>

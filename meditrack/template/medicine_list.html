@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Medicine List | MediTrack</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0d47a1, #1976d2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      padding: 30px;
+      border-radius: 20px;
+      width: 95%;
+      max-width: 1000px;
+      color: white;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 26px;
+    }
+
+    .user-info {
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 15px;
+      color: #e0f7fa;
+    }
+
+    .actions a {
+      margin: 0 10px;
+      text-decoration: none;
+      background: #1565c0;
+      padding: 10px 15px;
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .actions a:hover {
+      background: #0d47a1;
+    }
+
+    .search-box {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    #searchInput {
+      padding: 10px;
+      width: 250px;
+      border-radius: 10px;
+      border: none;
+      font-size: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table thead {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    table th, table td {
+      padding: 12px 15px;
+      text-align: center;
+      color: white;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    table tr:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .logout-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #e1f5fe;
+      text-decoration: underline;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .actions a {
+        display: block;
+        margin: 10px auto;
+        width: 80%;
+        text-align: center;
+      }
+
+      #searchInput {
+        width: 90%;
+      }
+
+      table th, table td {
+        font-size: 14px;
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>MediTrack®</h2>
+
+  {% if request.session.username %}
+  <p class="user-info">Welcome, {{ request.session.username }}!</p>
+  {% endif %}
+
+  <div class="actions">
+    <a href="/addmedicine">+ Add New Medicine</a>
+    <a href="/addsales">+ Add Sales</a>
+    <a href="{% url 'view_sales' %}">+ View Sales</a>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search medicine by name...">
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Stock</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for medicine in medicines %}
+      <tr>
+        <td>{{ medicine.name }}</td>
+        <td>{{ medicine.stock }}</td>
+        <td>{{ medicine.price }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">No medicines found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a class="logout-link" href="/">← Logout</a>
+</div>
+
+<script>
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('keyup', function () {
+    const filter = searchInput.value.toLowerCase();
+    const rows = document.querySelectorAll('table tbody tr');
+
+    rows.forEach(row => {
+      const nameCell = row.querySelector('td:first-child');
+      if (nameCell) {
+        const nameText = nameCell.textContent.toLowerCase();
+        row.style.display = nameText.includes(filter) ? '' : 'none';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

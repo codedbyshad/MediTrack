@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | MediTrack</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #0d47a1, #1976d2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .background-elements {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 1;
+    }
+
+    .login-box {
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 40px 30px;
+      width: 350px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+      color: #fff;
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .login-box form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .login-box input[type="text"],
+    .login-box input[type="password"] {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      color: #fff;
+      font-size: 15px;
+    }
+
+    .login-box input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .login-box input[type="submit"] {
+      background: #1565c0;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+
+    .login-box input[type="submit"]:hover {
+      background: #0d47a1;
+    }
+
+    .login-box .error-msg {
+      color: #ffe57f;
+      font-size: 14px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .login-box .extra {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .login-box .extra a {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 400px) {
+      .login-box {
+        width: 90%;
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-elements"></div>
+
+  <div class="login-box">
+    <h2>Login to MediTrack</h2>
+
+    {% if error %}
+      <p class="error-msg">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" action="login">
+      {% csrf_token %}
+      <input type="text" name="username" placeholder="Enter Username" required>
+      <input type="password" name="password" placeholder="Enter Password" required>
+      <input type="submit" value="Sign in">
+    </form>
+
+    <div class="extra">
+      <p>© codedbyshad 2025</p>
+    </div>
+  </div>
+</body>
+</html>
